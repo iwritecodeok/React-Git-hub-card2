@@ -1,50 +1,46 @@
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+
 .App {
   text-align: center;
+  background: dodgerblue;
+  color: #f4f4f4;
+  padding: 20px 0 50px;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+.main-heading {
+  margin-bottom: 40px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.card-container {
+  min-width: 700px;
+  width: 70%;
+  margin: 0 auto;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
-.App-link {
-  color: #61dafb;
+.follower-cards {
+  overflow-y: scroll;
+  height: 70vh;
+  padding-right: 30px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.card-content * {
+  margin-bottom: 8px;
 }
-.card{
-  display:flex;
-  flex-direction: column;
-  justify-items: center;
-  align-items: center;
-  border:2px solid black;
-  border-radius: 2%;
-  width:25%;
-  height:25%;
-  margin:2%;
-  padding:1%
+
+.card-content div {
+  margin: 20px 0 0;
 }
-.card .card__avatar{
-  object-fit: contain;
-  max-width: 96%;
-  max-height: 96%;
+
+input, button {
+  padding: 10px;
 }

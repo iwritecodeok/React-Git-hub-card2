@@ -1,131 +1,101 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import axios from "axios";
+import "./App.css";
 
+import Card from "./components/Card";
 
-const Component = React.Component
-
-class App extends Component {
-  constructor(props) {
-    super(props)
-    
+class App extends React.Component {
+  constructor() {
+    super();
     this.state = {
-      username: 'jnichols93',
-      realName: '',
-      avatar: '',
-      location: '',
-      repos: '',
-      followers: '',
-      url: '',
-      notFound: ''
-    }
+      user: "jnichols93",
+      userData: {},
+      followersData: []
+    };
   }
-  render() {
-    return (
-      <div>
-        <SearchBox fetchUser={this.fetchUser.bind(this)}/>
-        <Card data={this.state} />
-      </div>
-    )
-  }
-  
-  // the api request function
-  fetchApi(url) { 
-    
-    fetch(url)
-      .then((res) => res.json() )
-      .then((data) => {
-        
-        // update state with API data
-        this.setState({
-          username: data.login,
-          realName: data.name,
-          avatar: data.avatar_url,
-          location: data.location,
-          repos: data.public_repos,
-          followers: data.followers,
-          url: data.html_url,
-          notFound: data.message
-        })
-      })
-      .catch((err) => console.log('oh no!') )
-  }
-  
-  fetchUser(username) {
-    let url = `https://api.github.com/users/${username}`
-    this.fetchApi(url)
-  }
-  
+
   componentDidMount() {
-    let url = `https://api.github.com/users/${this.state.username}`
-    this.fetchApi(url)
+    this.getUser();
+    this.setState({ user: "" })
   }
-}
 
-class SearchBox extends Component {
-  render() {
-    return (
-      <form 
-        className="searchbox" 
-        onSubmit={this.handleClick.bind(this)}>
-        <input
-          ref="search"
-          className="searchbox__input" 
-          type="text" 
-          placeholder="type username..."/>
-        
-        <input
-          type="submit"
-          className="searchbox__button"
-          value="Search GitHub User" />
-      </form>
-    )
-  }
-  
-  handleClick(e) {
-    e.preventDefault()
-    let username = this.refs.search.getDOMNode().value
-    // sending the username value to parent component to fetch new data from API
-    this.props.fetchUser(username)
-    this.refs.search.getDOMNode().value = ''
-  }
-}
-
-class Card extends Component {
-  render() {
-    let data = this.props.data
-    
-    if (data.notFound === 'Not Found') {
-      // when username is not found...
-      return <h3 className="card__notfound">User not found. Try again!</h3>
-    } else {
-      // if username found, then...
-      return (
-        <div className="card">
-          <a href={data.url} target="_blank">
-            <img className="card__avatar" src={data.avatar} />             
-          </a>
-          <h2 className="card__username">
-            <a className="card__link" href={data.url} target="_blank">{data.username}</a></h2>
-          <dl>
-            <dt>Real name</dt>
-            <dd>{data.realName}</dd>
-
-            <dt>Location</dt>
-            <dd>{data.location}</dd>
-
-            <dt>Number of public repos</dt>
-            <dd>{data.repos}</dd>
-
-            <dt>Number of followers</dt>
-            <dd>{data.followers}</dd>
-          </dl>
-        </div>
-      )
+  componentDidUpdate(prevProps, prevState) {
+    // if the userData is updated
+    if (this.state.userData !== prevState.userData) {
+      // reset followersData
+      this.setState(() => ({ followersData: [] }))
+      // update followersData
+      axios.get(this.state.userData.followers_url)
+        .then(response => {
+          const followerURLs = response.data.map(follower => follower.url);
+          followerURLs.forEach(url => {
+            axios.get(url)
+              .then(response => {
+                this.setState(() => ({ followersData: [...this.state.followersData, response.data]}))
+              })
+              .catch(error => console.log(error))
+          })
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
+
+  getUser = () => {
+    // fetch data for current user
+    axios.get(`https://api.github.com/users/${this.state.user}`)
+      .then(response => {
+        // console.log(response);
+        // then put the data into userData state
+        this.setState({ userData: response.data });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  handleChange = event => {
+    this.setState({ [event.target.name]: event.target.value})
+  }
+
+  handleSubmit = event => {
+    event.preventDefault();
+    this.getUser();
+    this.setState({ user: "" })
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <h1 className="main-heading">github user cards</h1>
+        <form onSubmit={this.handleSubmit}>
+          <input 
+            type="text" 
+            placeholder="enter a username" 
+            value={this.state.user}
+            name="user"
+            onChange={this.handleChange}
+          />
+          <button type="submit">search</button>
+        </form>
+        <div className="card-container">
+          <div className="user-card">
+            <h2 className="main-heading">User: </h2>
+            <Card userData={this.state.userData}/>
+          </div>
+          <div className="follower-container">
+            <h2 className="main-heading">Followers: </h2>
+            <div className="follower-cards">
+              {this.state.followersData.map(follower => {
+                return <Card userData={follower} key={follower.id} />
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
-
-
 
 export default App;
