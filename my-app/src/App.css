@@ -1,0 +1,46 @@
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+
+.App {
+  text-align: center;
+  background: dodgerblue;
+  color: #f4f4f4;
+  padding: 20px 0 50px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-heading {
+  margin-bottom: 40px;
+}
+
+.card-container {
+  min-width: 700px;
+  width: 70%;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.follower-cards {
+  overflow-y: scroll;
+  height: 70vh;
+  padding-right: 30px;
+}
+
+.card-content * {
+  margin-bottom: 8px;
+}
+
+.card-content div {
+  margin: 20px 0 0;
+}
+
+input, button {
+  padding: 10px;
+}
